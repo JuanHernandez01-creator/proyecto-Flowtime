@@ -3,18 +3,583 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f3d2e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Flowtime</title>
-<meta name="theme-color" content="#2d6a4f">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Flowtime">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f6ee;--card:#fff;--ink:#12261b;--mut:#5b6e61;--line:#e0e8dc;--acc:#2d6a4f;--acc2:#d9793a;--wave:#52b788;--on:#fff;--sh:0 1px 2px rgba(18,38,27,.06),0 14px 30px -18px rgba(18,38,27,.4);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1a12;--card:#13291c;--ink:#e8f3ea;--mut:#94ad9c;--line:#244532;--acc:#5fcf8e;--acc2:#f0a25f;--on:#07150d;--sh:0 14px 30px -18px #000}}
+:root[data-theme="dark"]{--bg:#0b1a12;--card:#13291c;--ink:#e8f3ea;--mut:#94ad9c;--line:#244532;--acc:#5fcf8e;--acc2:#f0a25f;--on:#07150d;--sh:0 14px 30px -18px #000}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:'Bricolage Grotesque',system-ui,Arial,sans-serif;line-height:1.5;
+background:radial-gradient(800px 380px at 100% -8%,color-mix(in srgb,var(--wave) 22%,transparent),transparent),radial-gradient(600px 300px at -10% 30%,color-mix(in srgb,var(--acc2) 12%,transparent),transparent),var(--bg);background-attachment:fixed}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 112px}
+@media(min-width:720px){.wrap{padding-bottom:40px}}
+header{display:flex;align-items:center;gap:12px;padding:6px 2px 16px}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.1rem;color:var(--on);background:linear-gradient(135deg,var(--acc),var(--wave));flex:none}
+.hi{flex:1;min-width:0;line-height:1.2}.hi small{display:block;color:var(--mut);font-size:.8rem}.hi b{font-size:1.2rem;font-weight:800;overflow-wrap:anywhere}
+.out{background:transparent;border:1px solid var(--line);color:var(--mut);padding:7px 14px;border-radius:99px;cursor:pointer;font-weight:600;font-size:.85rem}
+h1{margin:0;font-size:1.9rem;font-weight:800;letter-spacing:-.03em}
+h2{font-size:1.15rem;margin:0 0 12px;font-weight:800;letter-spacing:-.01em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
+#v>*{animation:up .35s ease both}@keyframes up{from{opacity:0;transform:translateY(8px)}}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:2px;padding:6px;max-width:560px;margin:0 auto;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:28px;box-shadow:var(--sh)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border:0;background:transparent;border-radius:22px;cursor:pointer;color:var(--mut);font-size:.72rem;font-weight:700;transition:background .2s,color .2s}
+nav button.on{background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--acc)}
+nav svg{width:22px;height:22px}
+@media(min-width:720px){nav{position:sticky;top:8px;bottom:auto;left:auto;right:auto;max-width:none;margin:0 0 16px}nav button{flex-direction:row;justify-content:center;gap:8px;font-size:.9rem;padding:10px}}
+.btn{padding:12px 22px;border:0;border-radius:99px;background:linear-gradient(135deg,var(--acc),var(--wave));color:var(--on);font-weight:700;cursor:pointer;box-shadow:0 8px 18px -8px var(--acc);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.lg{width:100%;padding:15px;font-size:1.05rem}
+.btn.sec{background:transparent;border:1px solid var(--line);color:var(--ink);box-shadow:none}
+.btn.warn{background:linear-gradient(135deg,var(--acc2),#f2b45c);color:#2e1600;box-shadow:0 8px 18px -8px var(--acc2)}
+.btn.del{background:transparent;color:var(--mut);border:1px solid var(--line);padding:4px 12px;box-shadow:none;font-size:.82rem}
+.btn:focus-visible,nav button:focus-visible,.out:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+input,select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+label{display:block;font-size:.85rem;color:var(--mut);margin:10px 0 4px;font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:140px}
+.timer{font-weight:800;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.04em;line-height:1}
+.center{text-align:center}.mut{color:var(--mut);font-size:.9rem}
+.acts{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.item{padding:14px 0;border-top:1px solid var(--line)}.item:first-of-type{border-top:0}
+.ih{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pr{display:flex;align-items:center;gap:10px;margin-top:8px}.pr input[type=range]{flex:1;width:auto}.pr .mut{width:38px;text-align:right}
+.tag{display:inline-flex;align-items:center;font-size:.78rem;padding:2px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--mut);font-weight:600}
+.tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c,var(--acc));margin-right:6px}
+.bar{height:8px;background:var(--bg);border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;border-radius:9px;background:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{border-top:5px solid var(--wave)!important;padding:16px!important}
+.grid .stat:nth-child(2){border-top-color:var(--acc2)!important}.grid .stat:nth-child(3){border-top-color:#c9a227!important}.grid .stat:nth-child(4){border-top-color:#3f8f5a!important}
+.stat b{display:block;font-size:2rem;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+pre{white-space:pre-wrap;font-family:inherit;background:var(--bg);border:1px dashed var(--acc);border-radius:16px;padding:14px;margin:12px 0 0}
+input[type=range]{padding:0;accent-color:var(--acc)}
+.hide{display:none}.note{font-size:.8rem;color:var(--mut);margin-top:10px}
+.empty{text-align:center;padding:28px 8px;color:var(--mut)}.empty b{display:block;font-size:2.4rem;margin-bottom:6px}
+.pick{display:grid;gap:8px;margin:0 0 16px}
+.opt{position:relative;display:flex;align-items:center;gap:12px;padding:13px 15px;margin:0;border:1.5px solid var(--line);border-radius:18px;cursor:pointer;color:var(--ink);font-size:1rem;transition:border-color .15s,background .15s}
+.opt input{position:absolute;opacity:0;width:0;height:0}
+.opt .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.opt .t{flex:1;min-width:0}.opt b{display:block}.opt small{color:var(--mut);font-size:.8rem;font-weight:500}
+.opt .pc{font-weight:800;color:var(--mut);font-size:.85rem}
+.opt:has(input:checked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.opt:has(input:focus-visible){outline:3px solid var(--acc2);outline-offset:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:7px 15px;border-radius:99px;border:1px solid var(--line);background:transparent;cursor:pointer;font-weight:600;color:var(--mut);text-transform:capitalize}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--on)}
+details{margin-top:12px}summary{cursor:pointer;font-weight:600;color:var(--mut);font-size:.9rem}
+.week{display:flex;gap:8px;height:160px}
+.week .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.colbar{width:100%;max-width:40px;flex:1;display:flex;align-items:flex-end;background:var(--bg);border-radius:10px;overflow:hidden}
+.colbar i{display:block;width:100%;border-radius:10px;background:linear-gradient(180deg,var(--wave),var(--acc))}
+.col.today .mut{color:var(--acc);font-weight:800}
+.hero{position:relative;overflow:hidden;color:#fff;border:0;padding:26px 18px 96px;background:linear-gradient(160deg,#0f3d2e,#1f6f4a 60%,#52b788)}
+.hero:has(.timer.brk){background:linear-gradient(160deg,#5a3216,#b8621f 55%,#f2b45c)}
+.hero>*{position:relative;z-index:1}
+.hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 Q150 0 300 50 T600 50 T900 50 T1200 50 V100 H0Z' fill='white'/%3E%3C/svg%3E") repeat-x}
+.hero::before{height:80px;background-size:1200px 80px;opacity:.14;animation:flow 14s linear infinite reverse}
+.hero::after{height:56px;background-size:900px 56px;opacity:.2;animation:flow2 9s linear infinite}
+@keyframes flow{to{background-position-x:1200px}}@keyframes flow2{to{background-position-x:900px}}
+@media (prefers-reduced-motion:reduce){.hero::before,.hero::after,#v>*{animation:none}.btn,nav button{transition:none}}
+.hero h1,.hero h2,.hero p,.hero .mut,.hero .note,.hero label{color:#fff}
+.hero h2{margin-bottom:6px}.hero .mut,.hero .note,.hero label{opacity:.88}
+.hero .tag{background:rgba(255,255,255,.18);border-color:transparent;color:#fff}
+.hero input{background:#fff;color:#0f3d2e;border-color:transparent}
+.hero .btn{background:#fff;color:#0f3d2e;box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
+.hero .btn.warn{color:#7a3a0e}.hero .btn.sec{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.65);box-shadow:none}
+.ringwrap{position:relative;width:min(280px,76vw);aspect-ratio:1;margin:16px auto 8px}
+.ringwrap svg{width:100%;height:100%;display:block}
+.tr{fill:none;stroke:rgba(255,255,255,.22);stroke-width:8}
+.pg{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:553;transition:stroke-dashoffset .5s linear}
+.ringwrap .timer{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(2.6rem,14vw,3.8rem);text-shadow:0 4px 24px rgba(0,0,0,.25)}
+.mini{display:flex;justify-content:center;gap:34px;margin-top:16px}.mini b{display:block;font-size:2.2rem;font-weight:800;line-height:1}.mini span{opacity:.88;font-size:.85rem}
+.login{max-width:420px;margin:6vh auto 0;text-align:left}.login h1{font-size:2.8rem;color:#fff}
+nav button{min-width:0}
+.mp{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:2px;padding:5px 8px 5px 18px;background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:99px;box-shadow:var(--sh)}
+.mpn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:.9rem}
+.mp button{border:0;background:transparent;font-size:1.1rem;width:40px;height:40px;border-radius:50%;cursor:pointer}
+.mp button:hover{background:color-mix(in srgb,var(--acc) 15%,transparent)}
+.mp button:focus-visible,.trk:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.hasmp .wrap{padding-bottom:180px}
+@media(min-width:720px){.mp{bottom:calc(14px + env(safe-area-inset-bottom,0px))}.hasmp .wrap{padding-bottom:90px}}
+.trk{flex:1;min-width:0;text-align:left;border:0;background:transparent;cursor:pointer;padding:8px 0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trk.on{color:var(--acc)}
+textarea{width:100%;min-height:130px;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:var(--bg);font:inherit;color:inherit;resize:vertical}
+textarea:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.pick{max-height:min(46vh,380px);overflow-y:auto;padding:2px}
+</style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<script type="module" src="/src/main.js"></script>
+<div id="mp"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='flowtime_demo_v1';
+const seed=()=>({user:null,subj:['Cálculo','Programación','Bases de datos'],
+ acts:[{id:1,t:'Taller de derivadas',s:'Cálculo',p:30},{id:2,t:'Proyecto API REST',s:'Programación',p:55},{id:3,t:'Modelo entidad-relación',s:'Bases de datos',p:10}],
+ ses:[],cur:null,brk:null,last:null,nid:10});
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||seed()}catch(e){S=seed()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let tab='sesion',lyric='';
+
+const fmt=ms=>{const s=Math.max(0,Math.floor(ms/1000));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+ return (h?h+':':'')+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0')};
+const mins=ms=>Math.round(ms/60000);
+const suggest=m=>m<25?5:m<50?10:m<90?15:20;
+const act=id=>S.acts.find(a=>a.id==id);
+const col=s=>{let x=0;for(const c of String(s))x=(x*31+c.charCodeAt(0))%6;return `hsl(${[150,95,38,15,175,60][x]} 55% 40%)`};
+
+function render(){
+ const app=$('#app');
+ if(!S.user){
+  app.innerHTML=`<div class="card login hero"><h1>🌲 Flowtime</h1><p class="mut">Estudia el tiempo que tu concentración aguante. Descansa cuando la necesites.</p>
+  <label for="n">Nombre</label><input id="n" placeholder="Tu nombre">
+  <label for="e">Correo</label><input id="e" type="email" placeholder="correo@universidad.edu">
+  <p class="note">Prototipo de demostración: no hay servidor, los datos quedan en este navegador.</p>
+  <button class="btn" id="go" style="width:100%;margin-top:10px">Entrar</button></div>`;
+  $('#go').onclick=()=>{const n=$('#n').value.trim();if(!n){$('#n').focus();return}S.user=n;save();render()};
+  return;
+ }
+ const tabs=[['sesion','Sesión'],['acts','Actividades'],['hist','Historial'],['stats','Estadísticas'],['music','Música']];
+ const hr=new Date().getHours(),gr=hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches';
+ app.innerHTML=`<header><div class="av">${esc(S.user.trim()[0].toUpperCase())}</div><div class="hi"><small>${gr}</small><b>${esc(S.user)}</b></div><button class="out" id="out">Salir</button></header>
+ <nav aria-label="Secciones">${tabs.map(t=>`<button data-t="${t[0]}" class="${tab==t[0]?'on':''}"${tab==t[0]?' aria-current="page"':''}>${ICO[t[0]]}<span>${t[1]}</span></button>`).join('')}</nav><main id="v"></main>`;
+ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();scrollTo(0,0)});
+ $('#out').onclick=()=>{S.user=null;save();Mus.stop();render()};Mus.mini();
+ ({sesion:vSesion,acts:vActs,hist:vHist,stats:vStats,music:vMusic})[tab]();
+}
+const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICO={sesion:ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>'),acts:ic('<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h10"/>'),hist:ic('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4M12 8v4l3 2"/>'),stats:ic('<path d="M5 20V10M12 20V4M19 20v-7"/>'),music:ic('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>')};
+const ring=(goal,brk)=>`<div class="ringwrap"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="tr" cx="100" cy="100" r="88"/><circle class="pg" id="rg" data-goal="${goal}" cx="100" cy="100" r="88" transform="rotate(-90 100 100)"/></svg><div class="timer${brk?' brk':''}" id="tm" role="timer">00:00</div></div>`;
+const empty=(e,t)=>`<div class="empty"><b>${e}</b>${t}</div>`;
+let selId=null;
+
+/* ---------- Sesión ---------- */
+function vSesion(){
+ const v=$('#v');wake(!!(S.cur||S.brk));
+ if(S.cur){
+  const a=act(S.cur.actId);
+  v.innerHTML=`<div class="card center hero"><span class="tag" style="--c:${col(a.s)}">${esc(a.s)}</span><h2 style="margin-top:10px">${esc(a.t)}</h2>
+  ${ring(0,false)}<p class="mut">Sin límite: termina cuando notes que pierdes el foco.</p>
+  <div class="acts"><button class="btn" id="fin">Finalizar sesión</button></div></div>`;
+  $('#fin').onclick=()=>{const end=Date.now(),d=end-S.cur.start;
+   const ss={id:S.nid++,actId:S.cur.actId,start:S.cur.start,end,dur:d,brk:0};S.ses.push(ss);S.last=ss.id;S.cur=null;lyric='';save();Mus.onBreak();render()};
+  tick();return;
+ }
+ if(S.last){
+  const ss=S.ses.find(x=>x.id==S.last),a=act(ss.actId),sug=suggest(mins(ss.dur));
+  if(S.brk){
+   v.innerHTML=`<div class="card center hero"><h2>Descanso</h2>${ring(sug*60000,true)}
+   <p class="mut" id="bt">${S.brk.al?'¡Descanso terminado! Vuelve cuando estés listo.':`Sugerido: ${sug} min · trabajaste ${mins(ss.dur)} min`}</p>
+   <div class="acts"><button class="btn warn" id="eb">Terminar descanso</button></div></div>${songCard(a)}`;
+   $('#eb').onclick=()=>{stopSpeak();ss.brk=Date.now()-S.brk.start;S.brk=null;S.last=null;save();render()};
+   tick();bindSong(a);return;
+  }
+  v.innerHTML=`<div class="card center hero"><h2>Sesión guardada ✓</h2><p>Estudiaste <b>${fmt(ss.dur)}</b> en «${esc(a.t)}».</p>
+  <p class="mut">Descanso sugerido: <b>${sug} minutos</b></p>
+  <div class="acts"><button class="btn warn" id="sb">Iniciar descanso</button><button class="btn sec" id="sk">Omitir descanso</button></div></div>${songCard(a)}`;
+  $('#sb').onclick=()=>{readPrefs();S.brk={start:Date.now()};save();prep();if(S.auto){lyric=makeLyric(a,S.style||'rap',S.kw);playSong(lyric)}render()};
+  $('#sk').onclick=()=>{stopSpeak();S.last=null;save();render()};
+  bindSong(a);return;
+ }
+ if(!S.acts.length){v.innerHTML=`<div class="card">${empty('📚','Aún no tienes actividades.')}<div class="acts" style="margin-top:0"><button class="btn" id="ga">Crear actividad</button></div></div>`;
+  $('#ga').onclick=()=>{tab='acts';render()};return}
+ const t0=new Date();t0.setHours(0,0,0,0);
+ const td=S.ses.filter(x=>x.start>=t0.getTime()),tm=mins(td.reduce((a,x)=>a+x.dur,0));
+ const sg=suggestNext();if(!S.acts.some(a=>a.id==selId))selId=sg?sg.id:S.acts[0].id;
+ v.innerHTML=`<div class="card center hero"><h2>${S.ses.length?'Sigue con tu ritmo':'Empieza tu primera sesión'}</h2><p class="mut">Sin cronómetro fijo: tú decides cuándo parar.</p>
+ <div class="mini"><div><b>${td.length}</b><span>sesiones hoy</span></div><div><b>${tm}</b><span>min hoy</span></div></div></div>
+ <div class="card"><h2>¿Qué vas a estudiar?</h2>${sg?`<p class="mut" style="margin:-4px 0 12px">💡 Sugerido: <b>${esc(sg.t)}</b> · ${sg.why}</p>`:''}<div class="pick">${S.acts.map(a=>`<label class="opt"><input type="radio" name="sel" value="${a.id}"${a.id==selId?' checked':''}><span class="dot" style="background:${col(a.s)}"></span><span class="t"><b>${esc(a.t)}</b><small>${esc(a.s)}</small></span><span class="pc">${a.p}%</span></label>`).join('')}</div>
+ <button class="btn lg" id="st">Iniciar sesión</button></div>`;
+ document.querySelectorAll('input[name=sel]').forEach(r=>r.onchange=()=>{selId=+r.value});
+ $('#st').onclick=()=>{S.cur={actId:selId,start:Date.now()};save();Mus.onFocus();render()};
+}
+let iv;
+function tick(){
+ clearInterval(iv);
+ const f=()=>{const el=$('#tm');if(!el){clearInterval(iv);return}
+  const e=Date.now()-(S.cur?S.cur.start:S.brk.start);el.textContent=fmt(e);
+  const r=$('#rg');if(r){const g=+r.dataset.goal,p=g?Math.min(1,e/g):(e%60000)/60000;r.style.transition=g?'':'none';r.style.strokeDashoffset=553*(1-p);if(S.brk&&g&&e>=g&&!S.brk.al){S.brk.al=1;save();breakDone()}}};
+ f();iv=setInterval(f,500);
+}
+
+/* ---------- Canción de repaso (simulada + voz del navegador) ---------- */
+const canSpeak='speechSynthesis' in window;
+/* Instrumental generado con Web Audio (sin archivos externos) */
+const STY={
+ rap:{bpm:88,k:'x.....x..x......',s:'....x.......x...',h:'x.x.x.x.x.x.x.x.',w:'triangle',prog:[[110,1],[87.3,0],[130.8,0],[98,0]],rate:1.08},
+ pop:{bpm:100,k:'x...x...x...x...',s:'....x.......x...',h:'..x...x...x...x.',w:'triangle',prog:[[130.8,0],[98,0],[110,1],[87.3,0]],rate:.98},
+ balada:{bpm:68,k:'x.......x.......',s:'................',h:'................',w:'sine',arp:1,prog:[[110,1],[87.3,0],[130.8,0],[98,0]],rate:.85},
+ rock:{bpm:120,k:'x.....x.x.......',s:'....x.......x...',h:'x.x.x.x.x.x.x.x.',w:'sawtooth',prog:[[82.4,1],[130.8,0],[98,0],[146.8,0]],rate:1.02},
+ reggaeton:{bpm:95,k:'x...x...x...x...',s:'...x..x....x..x.',h:'x.x.x.x.x.x.x.x.',w:'square',prog:[[110,1],[98,0],[87.3,0],[98,0]],rate:.96}
+};
+let AC=null,beat=null;
+function startBeat(st){
+ stopBeat();
+ const P=STY[st]||STY.pop;
+ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+ if(AC.resume)AC.resume();
+ const g=AC.createGain();g.gain.value=.26;g.connect(AC.destination);
+ const nb=AC.createBuffer(1,Math.floor(AC.sampleRate*.3),AC.sampleRate),d=nb.getChannelData(0);
+ for(let j=0;j<d.length;j++)d[j]=Math.random()*2-1;
+ const tone=(f,t,du,ty,v)=>{const o=AC.createOscillator(),e=AC.createGain();o.type=ty;o.frequency.value=f;
+  e.gain.setValueAtTime(.0001,t);e.gain.linearRampToValueAtTime(v,t+.03);e.gain.exponentialRampToValueAtTime(.0001,t+du);
+  o.connect(e);e.connect(g);o.start(t);o.stop(t+du+.05)};
+ const kick=t=>{const o=AC.createOscillator(),e=AC.createGain();
+  o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);
+  e.gain.setValueAtTime(.9,t);e.gain.exponentialRampToValueAtTime(.001,t+.25);o.connect(e);e.connect(g);o.start(t);o.stop(t+.3)};
+ const hit=(t,du,v,ty,f)=>{const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),e=AC.createGain();
+  s.buffer=nb;fl.type=ty;fl.frequency.value=f;e.gain.setValueAtTime(v,t);e.gain.exponentialRampToValueAtTime(.001,t+du);
+  s.connect(fl);fl.connect(e);e.connect(g);s.start(t);s.stop(t+du+.02)};
+ const step=60/P.bpm/4;let t=AC.currentTime+.1,i=0;
+ const run=()=>{while(t<AC.currentTime+.25){
+  const s=i%16,c=P.prog[Math.floor(i/16)%P.prog.length],r=c[0],ch=c[1]?[1,1.189,1.498]:[1,1.26,1.498];
+  if(P.k[s]=='x')kick(t);
+  if(P.s[s]=='x')hit(t,.15,.5,'bandpass',1800);
+  if(P.h[s]=='x')hit(t,.05,.18,'highpass',7000);
+  if(s==0)ch.forEach(x=>tone(r*2*x,t,step*15,P.w,.05));
+  if(s%8==0)tone(r,t,step*6,'sine',.22);
+  if(P.arp&&s%2==0)tone(r*4*ch[(s/2)%3],t,step*3,'sine',.07);
+  t+=step;i++}};
+ run();
+ beat={g,timer:setInterval(run,40)};
+ return beat;
+}
+function stopBeat(b){
+ if(!beat||(b&&b!==beat))return;
+ clearInterval(beat.timer);
+ const cur=beat;beat=null;
+ cur.g.gain.setTargetAtTime(0,AC.currentTime,.4);
+ setTimeout(()=>{try{cur.g.disconnect()}catch(e){}},2000);
+}
+const esVoices=()=>{
+ if(!canSpeak)return [];
+ const sc=x=>/natural|neural|online|google/i.test(x.name)?0:1;
+ return speechSynthesis.getVoices().filter(x=>x.lang.toLowerCase().startsWith('es')).sort((x,y)=>sc(x)-sc(y));
+};
+const voiceOpts=()=>{const l=esVoices();
+ return l.length?l.map(v=>`<option value="${esc(v.voiceURI)}"${S.voice==v.voiceURI?' selected':''}>${esc(v.name)}</option>`).join(''):'<option value="">Voz predeterminada</option>'};
+if(canSpeak)speechSynthesis.onvoiceschanged=()=>{const s=$('#vo');if(s)s.innerHTML=voiceOpts()};
+let spTok=0;
+function speak(t,st,done){
+ speechSynthesis.cancel();
+ const tok=++spTok;
+ const lines=t.replace(/\[[^\]]*\]/g,'').split('\n').map(x=>x.trim()).filter(Boolean);
+ const vs=esVoices(),v=vs.find(x=>x.voiceURI==S.voice)||vs[0];
+ const rate=(STY[st]||STY.pop).rate*(S.rate||1);
+ let k=0;
+ const next=()=>{
+  if(tok!==spTok)return;
+  if(k>=lines.length){if(done)done();return}
+  const u=new SpeechSynthesisUtterance(lines[k++]);
+  if(v)u.voice=v;
+  u.lang=v?v.lang:'es-ES';u.rate=rate;
+  u.onend=()=>setTimeout(next,320);
+  u.onerror=()=>{if(tok===spTok&&done)done()};
+  speechSynthesis.speak(u);
+ };
+ next();
+}
+function playSong(t){
+ const st=S.style||'rap',b=S.inst!==false?startBeat(st):null;
+ if(canSpeak)speak(t,st,()=>{if(b)setTimeout(()=>stopBeat(b),800)});
+ else if(b)setTimeout(()=>stopBeat(b),30000);
+}
+function stopSpeak(){spTok++;if(canSpeak)speechSynthesis.cancel();stopBeat()}
+function makeLyric(a,st,kwText){
+ const kw=(kwText||'los conceptos clave').split(',').map(x=>x.trim()).filter(Boolean);
+ const k1=kw[0]||'los conceptos clave',k2=kw[1]||k1;
+ return `Repaso de ${a.s}, estilo ${st}\n\n[Estrofa 1]\nHoy trabajé en «${a.t}»,\nno hay prisa, sigo mi ritmo,\n${k1} es lo que repaso,\nlo repito hasta que lo domino.\n\n[Estribillo]\n${k1} y ${k2}, los llevo en la mente,\nun descanso corto y vuelvo más fuerte,\nfluyo con calma, sin correr,\nlo que entiendo hoy lo voy a retener.`;
+}
+function readPrefs(){
+ const s=$('#sty'),k=$('#kw'),c=$('#auto'),n=$('#inst'),vo=$('#vo'),rt=$('#rt');
+ if(s)S.style=s.value;if(k)S.kw=k.value;if(c)S.auto=c.checked;if(n)S.inst=n.checked;if(vo)S.voice=vo.value;if(rt)S.rate=+rt.value;save();
+}
+function songCard(a){
+ const est=['rap','pop','balada','rock','reggaeton'],cur=S.style||'rap';
+ return `<div class="card"><h2>🎵 Canción de repaso</h2>
+ <label>Estilo</label><div class="chips">${est.map(o=>`<button type="button" class="chip${cur==o?' on':''}" data-s="${o}">${o}</button>`).join('')}</div><input type="hidden" id="sty" value="${cur}">
+ <label for="kw">Palabras clave</label><input id="kw" placeholder="derivada, pendiente" value="${esc(S.kw||'')}">
+ <details><summary>Ajustes de voz y sonido</summary>
+ <div class="row"><div><label for="vo">Voz</label><select id="vo">${voiceOpts()}</select></div>
+ <div><label for="rt">Velocidad <span id="rv">${(S.rate||1).toFixed(2)}×</span></label><input type="range" id="rt" min="0.7" max="1.3" step="0.05" value="${S.rate||1}" style="width:100%"></div></div>
+ <label style="display:flex;gap:8px;align-items:center;margin:12px 0 0;color:var(--ink)"><input type="checkbox" id="auto" style="width:auto"${S.auto?' checked':''}> Reproducir automáticamente al iniciar el descanso</label>
+ <label style="display:flex;gap:8px;align-items:center;margin:8px 0 0;color:var(--ink)"><input type="checkbox" id="inst" style="width:auto"${S.inst!==false?' checked':''}> Con instrumental de fondo</label></details>
+ <div class="acts" style="justify-content:flex-start"><button class="btn sec" id="gs">Generar letra</button>
+ <button class="btn" id="pl">▶ Escuchar</button><button class="btn sec" id="sp">■ Detener</button></div>
+ <pre id="ly" class="${lyric?'':'hide'}">${esc(lyric)}</pre>
+ <p class="note">${canSpeak?'La voz y el instrumental los genera tu navegador (no es una canción cantada). ':'Tu navegador no soporta voz sintetizada. '}En el sistema real la letra la genera Claude desde el backend y el audio puede ser un archivo reproducido con &lt;audio autoplay&gt;. Revisa siempre los conceptos.</p></div>`;
+}
+function bindSong(a){
+ ['#sty','#kw','#auto','#inst','#vo','#rt'].forEach(i=>{$(i).onchange=readPrefs});
+ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{$('#sty').value=c.dataset.s;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x==c));readPrefs()});
+ $('#rt').oninput=()=>{$('#rv').textContent=(+$('#rt').value).toFixed(2)+'×'};
+ const show=()=>{$('#ly').textContent=lyric;$('#ly').classList.remove('hide')};
+ $('#gs').onclick=()=>{readPrefs();lyric=makeLyric(a,S.style||'rap',S.kw);show()};
+ $('#pl').onclick=()=>{readPrefs();if(!lyric)lyric=makeLyric(a,S.style||'rap',S.kw);show();playSong(lyric)};
+ $('#sp').onclick=stopSpeak;
+}
+
+/* ---------- Actividades ---------- */
+function vActs(){
+ $('#v').innerHTML=`<div class="card"><h2>Nueva actividad</h2>
+ <div class="row"><div><label for="at">Título</label><input id="at" placeholder="Ej. Parcial de física"></div>
+ <div><label for="as">Asignatura</label><input id="as" list="sl" placeholder="Elige o escribe una nueva"><datalist id="sl">${S.subj.map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div></div>
+ <div class="acts" style="justify-content:flex-start"><button class="btn" id="add">+ Crear actividad</button></div></div>
+ <div class="card"><h2>Mis actividades</h2>${S.acts.length?S.acts.map(a=>`<div class="item"><div class="ih"><div><b>${esc(a.t)}</b> <span class="tag" style="--c:${col(a.s)}">${esc(a.s)}</span></div>
+ <button class="btn del" data-d="${a.id}" aria-label="Eliminar ${esc(a.t)}">Eliminar</button></div>
+ <div class="bar" style="margin-top:10px"><i style="width:${a.p}%;background:${col(a.s)}"></i></div>
+ <div class="pr"><input type="range" min="0" max="100" step="5" value="${a.p}" data-id="${a.id}" aria-label="Progreso de ${esc(a.t)}"><span class="mut">${a.p}%</span></div></div>`).join(''):empty('📚','Aún no tienes actividades.<br>Crea la primera arriba.')}</div>`;
+ extras();$('#add').onclick=()=>{const t=$('#at').value.trim(),s=$('#as').value.trim();
+  if(!t||!s){(!t?$('#at'):$('#as')).focus();return}
+  if(!S.subj.includes(s))S.subj.push(s);S.acts.push({id:S.nid++,t,s,p:0});save();render()};
+ document.querySelectorAll('input[type=range]').forEach(r=>{
+  r.oninput=()=>{r.nextElementSibling.textContent=r.value+'%'};
+  r.onchange=()=>{act(r.dataset.id).p=+r.value;save();render()}});
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
+  if(S.cur&&S.cur.actId==b.dataset.d)return;
+  S.acts=S.acts.filter(a=>a.id!=b.dataset.d);S.ses=S.ses.filter(x=>x.actId!=b.dataset.d);save();render()});
+}
+
+/* ---------- Historial ---------- */
+function vHist(){
+ const l=[...S.ses].reverse();
+ $('#v').innerHTML=`<div class="card"><h2>Historial de sesiones</h2>${l.length?l.map(x=>{const a=act(x.actId);
+ return `<div class="item ih"><div><b>${a?esc(a.t):'(actividad eliminada)'}</b> ${a?`<span class="tag" style="--c:${col(a.s)}">${esc(a.s)}</span>`:''}
+ <div class="mut">${new Date(x.start).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}</div></div>
+ <div style="text-align:right"><b>${fmt(x.dur)}</b><div class="mut">descanso ${x.brk?fmt(x.brk):'—'}</div></div></div>`}).join(''):empty('🕘','Todavía no hay sesiones.<br>Inicia una en la pestaña Sesión.')}</div>`;
+}
+
+/* ---------- Estadísticas ---------- */
+function vStats(){
+ const n=S.ses.length,tot=S.ses.reduce((a,x)=>a+x.dur,0),br=S.ses.filter(x=>x.brk);
+ const por={};S.ses.forEach(x=>{const a=act(x.actId);if(a)por[a.s]=(por[a.s]||0)+x.dur});
+ const mx=Math.max(1,...Object.values(por));
+ const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-6+i);return d});
+ const dm=days.map(d=>S.ses.filter(x=>x.start>=d.getTime()&&x.start<d.getTime()+864e5).reduce((a,x)=>a+x.dur,0));
+ const dx=Math.max(1,...dm);
+ const st=(l,v)=>`<div class="card stat" style="margin:0"><b>${v}</b><span class="mut">${l}</span></div>`;
+ $('#v').innerHTML=`<div class="grid" style="margin-bottom:14px">${st('Tiempo total',n?fmt(tot):'—')}${st('Promedio por sesión',n?fmt(tot/n):'—')}${st('Sesiones',n)}${st('Descansos',br.length)}</div>
+ <div class="card"><h2>Últimos 7 días <span class="mut">(min)</span></h2><div class="week">${days.map((d,i)=>`<div class="col${i==6?' today':''}"><span class="mut">${mins(dm[i])||''}</span><div class="colbar"><i style="height:${dm[i]/dx*100}%"></i></div><span class="mut">${d.toLocaleDateString('es-CO',{weekday:'narrow'})}</span></div>`).join('')}</div></div>
+ <div class="card"><h2>Tiempo por asignatura</h2>${Object.keys(por).length?Object.entries(por).map(([k,v])=>`<div style="margin:12px 0"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><span class="mut">${fmt(v)}</span></div><div class="bar"><i style="width:${v/mx*100}%;background:${col(k)}"></i></div></div>`).join(''):empty('📊','Las estadísticas aparecen<br>después de tu primera sesión.')}</div>`;
+}
+/* ---------- Utilidades: pantalla encendida, aviso de descanso, almacenamiento ---------- */
+let wl=null;
+async function wake(on){
+ on=on&&S.awake!==false;
+ try{if(on&&'wakeLock' in navigator&&!wl&&document.visibilityState==='visible'){wl=await navigator.wakeLock.request('screen');wl.onrelease=()=>{wl=null}}
+  else if(!on&&wl){const w=wl;wl=null;await w.release()}}catch(e){wl=null}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wake(!!(S.cur||S.brk))});
+function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume();
+ [[880,0],[1175,.28],[1568,.56]].forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+d;
+  o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.25,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.55)})}catch(e){}}
+function prep(){if(S.notif===false)return;
+ try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume()}catch(e){}
+ if('Notification' in window&&Notification.permission==='default'){try{Notification.requestPermission()}catch(e){}}}
+function breakDone(){
+ if(S.notif===false)return;
+ try{if(navigator.vibrate)navigator.vibrate([250,120,250,120,400])}catch(e){}
+ chime();
+ const t=$('#bt');if(t)t.textContent='¡Descanso terminado! Vuelve cuando estés listo.';
+ if('Notification' in window&&Notification.permission==='granted'&&navigator.serviceWorker){
+  navigator.serviceWorker.ready.then(r=>r.showNotification('Flowtime',{body:'Terminó tu descanso. ¿Seguimos?',icon:'icons/icon-192.png',vibrate:[200,100,200],tag:'flowtime-break'})).catch(()=>{})}}
+async function protect(ask){
+ try{if(!navigator.storage||!navigator.storage.persist)return null;
+  if(await navigator.storage.persisted())return true;
+  return ask?await navigator.storage.persist():false}catch(e){return null}}
+protect(true);
+
+/* ---------- Importar temas de estudio ---------- */
+function parseTopics(txt,name){
+ txt=String(txt).replace(/^\uFEFF/,'').trim();const out=[];
+ const push=(s,t)=>{s=String(s||'').trim();t=String(t||'').trim();if(s&&t)out.push({s:s.slice(0,60),t:t.slice(0,120)})};
+ if(/^[\[{]/.test(txt)){
+  try{const j=JSON.parse(txt);
+   if(Array.isArray(j))j.forEach(x=>typeof x=='string'?push('General',x):x&&push(x.asignatura||x.subject||x.s||'General',x.tema||x.topic||x.t||x.titulo||x.title));
+   else Object.entries(j).forEach(([k,v])=>(Array.isArray(v)?v:[v]).forEach(t=>push(k,typeof t=='string'?t:t&&(t.tema||t.t||t.title))))}catch(e){}
+  return out}
+ const csv=/\.csv$/i.test(name||'');let cur='';
+ txt.split(/\r?\n/).forEach(raw=>{
+  let l=raw.trim(),m;if(!l)return;
+  if(csv)l=l.replace(/^"?([^",;]*)"?\s*[,;]\s*"?(.*?)"?$/,'$1;$2');
+  if(m=l.match(/^#+\s*(.+?)\s*:?$/)){cur=m[1];return}
+  if(m=l.match(/^(?:[-*•]|\d+[.)])\s+(.+)$/)){push(cur||'General',m[1]);return}
+  if(/^(asignatura|materia|subject)\s*[;:\t|,]\s*(tema|topic)/i.test(l))return;
+  if(m=l.match(/^(.+?)\s*:$/)){cur=m[1];return}
+  if(m=l.match(/^(.+?)\s*(?:[:;\t|]| - )\s*(.+)$/)){push(m[1],m[2]);return}
+  push(cur||'General',l)});
+ return out}
+function importTopics(txt,name){
+ const list=parseTopics(txt,name).slice(0,300);let n=0,dup=0;
+ const key=(s,t)=>(s+'|'+t).toLowerCase(),have=new Set(S.acts.map(a=>key(a.s,a.t)));
+ list.forEach(x=>{
+  const ex=S.subj.find(z=>z.toLowerCase()==x.s.toLowerCase());if(ex)x.s=ex;
+  const k=key(x.s,x.t);if(have.has(k)){dup++;return}
+  have.add(k);if(!S.subj.includes(x.s))S.subj.push(x.s);S.acts.push({id:S.nid++,t:x.t,s:x.s,p:0});n++});
+ if(n)save();return{n,dup}}
+/* Qué estudiar: lo que lleva más tiempo sin tocar; si empatan, lo de menor avance */
+function suggestNext(){
+ const last={};S.ses.forEach(x=>{last[x.actId]=Math.max(last[x.actId]||0,x.start)});
+ const a=S.acts.filter(a=>a.p<100).sort((a,b)=>(last[a.id]||0)-(last[b.id]||0)||a.p-b.p)[0];
+ if(!a)return null;const l=last[a.id],d=l?Math.floor((Date.now()-l)/864e5):0;
+ return{id:a.id,t:a.t,why:(l?(d?`hace ${d} día${d>1?'s':''} que no la estudias`:'la estudiaste hoy'):'aún no la has estudiado')+` · ${a.p}% de avance`}}
+/* Copia de seguridad */
+function exportData(){
+ const d=JSON.stringify({app:'flowtime',v:1,at:new Date().toISOString(),data:{...S,cur:null,brk:null,last:null}},null,1);
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));
+ a.download='flowtime-respaldo-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function importData(f){
+ try{const o=JSON.parse(await f.text()),d=o&&o.data;
+  if(!d||!Array.isArray(d.acts)||!Array.isArray(d.ses))throw 0;
+  if(!confirm('Esto reemplaza tus actividades, sesiones y ajustes actuales por los de la copia. ¿Continuar?'))return;
+  S={...seed(),...d,user:S.user||d.user,cur:null,brk:null,last:null};
+  S.nid=Math.max(S.nid||10,...S.acts.map(a=>a.id+1),...S.ses.map(x=>x.id+1));
+  lyric='';save();render();alert('Copia restaurada ✓')}
+ catch(e){alert('Ese archivo no parece una copia de Flowtime.')}}
+function extras(){
+ const v=$('#v'),ck='style="display:flex;gap:8px;align-items:center;margin:12px 0 0;color:var(--ink)"';
+ v.firstElementChild.insertAdjacentHTML('afterend',`<div class="card"><h2>📥 Importar temas de estudio</h2>
+ <p class="mut" style="margin-top:0">Pega tu lista o sube un archivo (.txt, .md, .csv o .json). Cada tema se crea como actividad y la app te sugiere cuál estudiar primero.</p>
+ <textarea id="tp" aria-label="Lista de temas" placeholder="# Cálculo&#10;- Límites&#10;- Derivadas&#10;&#10;# Programación&#10;- Recursividad"></textarea>
+ <details><summary>Formatos aceptados</summary><pre># Cálculo   (y debajo un tema por línea, con -)\nCálculo: Límites\nCálculo;Límites   (CSV)\n{"Cálculo":["Límites","Derivadas"]}\n\nLas líneas sin asignatura van a «General».</pre></details>
+ <div class="acts" style="justify-content:flex-start"><button class="btn" id="ti">Importar temas</button><button class="btn sec" id="tf">Elegir archivo…</button><input type="file" id="tfi" accept=".txt,.md,.csv,.json,text/*,application/json" class="hide" aria-label="Archivo de temas"></div>
+ <p class="note" id="tm" role="status"></p></div>`);
+ v.insertAdjacentHTML('beforeend',`<div class="card"><h2>🛟 Datos y ajustes</h2>
+ <label ${ck}><input type="checkbox" id="kw1" style="width:auto"${S.awake!==false?' checked':''}> Mantener la pantalla encendida durante la sesión</label>
+ <label ${ck}><input type="checkbox" id="kw2" style="width:auto"${S.notif!==false?' checked':''}> Avisar al terminar el descanso (sonido, vibración y notificación)</label>
+ <p class="mut" id="pst" style="margin:14px 0 6px"></p>
+ <div class="acts" style="justify-content:flex-start;margin-top:0"><button class="btn sec" id="pb">Proteger datos</button></div>
+ <div class="acts" style="justify-content:flex-start"><button class="btn" id="bx">⬇ Exportar copia</button><button class="btn sec" id="bi">⬆ Importar copia</button><input type="file" id="bfi" accept=".json,application/json" class="hide" aria-label="Archivo de copia"></div>
+ <p class="note">La copia incluye actividades, sesiones y ajustes. Tu música no va incluida: se guarda aparte en este navegador.</p></div>`);
+ const run=(t,n)=>{const r=importTopics(t,n);
+  const msg=r.n?`Listo: ${r.n} tema${r.n>1?'s':''} añadido${r.n>1?'s':''}${r.dup?` (${r.dup} ya existían)`:''}.`:(r.dup?'Todos esos temas ya existían.':'No encontré temas en ese texto. Revisa los formatos aceptados.');
+  if(r.n)render();$('#tm').textContent=msg};
+ $('#ti').onclick=()=>run($('#tp').value,'');
+ $('#tf').onclick=()=>$('#tfi').click();
+ $('#tfi').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(f)run(await f.text(),f.name)};
+ $('#kw1').onchange=e=>{S.awake=e.target.checked;save();wake(!!(S.cur||S.brk))};
+ $('#kw2').onchange=e=>{S.notif=e.target.checked;save();if(S.notif)prep()};
+ const st=r=>{$('#pst').textContent=r===true?'🔒 Almacenamiento protegido: el navegador no borrará tus datos ni tu música por falta de espacio.':r===false?'⚠️ Sin proteger: el navegador podría borrar tu música si le falta espacio. Instalar la app ayuda.':'La protección de almacenamiento no está disponible en este navegador.'};
+ protect(false).then(st);$('#pb').onclick=()=>protect(true).then(st);
+ $('#bx').onclick=exportData;$('#bi').onclick=()=>$('#bfi').click();
+ $('#bfi').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)importData(f)}}
+
+/* ---------- Música propia (persistente y en segundo plano) ---------- */
+/* El <audio> vive fuera de render(), así no se corta al cambiar de pestaña. */
+const Mus=(()=>{
+ const au=new Audio();au.preload='auto';
+ let T=[],cur=-1,fi=null,dbp=null,mem=0,errs=0;
+ const P=()=>S.mus=S.mus||{auto:true,vol:.5,shuffle:false,rep:'all'};
+ au.volume=P().vol;
+ /* IndexedDB: guarda los archivos para no volver a elegirlos */
+ const db=()=>dbp=dbp||new Promise((ok,no)=>{const r=indexedDB.open('flowtime_music',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('t',{keyPath:'id',autoIncrement:true});
+  r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+ const tx=(m,f)=>db().then(d=>new Promise((ok,no)=>{const t=d.transaction('t',m),q=f(t.objectStore('t'));
+  t.oncomplete=()=>ok(q.result);t.onerror=()=>no(t.error)}));
+ const load=async()=>{try{T=(await tx('readonly',s=>s.getAll())).sort((a,b)=>a.id-b.id)}catch(e){T=[]}mini();paint()};
+ const add=async files=>{
+  for(const f of files){
+   if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|wav|ogg|flac|aac|opus)$/i.test(f.name))continue;
+   const r={name:f.name.replace(/\.[^.]+$/,''),blob:f};
+   try{r.id=await tx('readwrite',s=>s.add(r))}catch(e){r.id=--mem}
+   T.push(r)}
+  protect(true);mini();paint()};
+ const del=async id=>{const i=T.findIndex(x=>x.id==id);if(i<0)return;
+  try{await tx('readwrite',s=>s.delete(id))}catch(e){}
+  if(i==cur){au.pause();au.removeAttribute('src');cur=-1}else if(i<cur)cur--;
+  T.splice(i,1);mini();paint()};
+ /* Reproducción */
+ const first=()=>P().shuffle?Math.floor(Math.random()*T.length):0;
+ function play(i){
+  if(!T.length)return;cur=(i+T.length)%T.length;
+  if(au.dataset.u)URL.revokeObjectURL(au.dataset.u);
+  au.dataset.u=URL.createObjectURL(T[cur].blob);au.src=au.dataset.u;
+  au.play().catch(()=>{});meta();mini();paint()}
+ function next(auto){
+  const p=P();if(auto&&p.rep=='one')return play(cur);
+  let n=cur+1;
+  if(p.shuffle&&T.length>1){do n=Math.floor(Math.random()*T.length);while(n==cur)}
+  else if(n>=T.length){if(p.rep=='off'&&auto)return;n=0}
+  play(n)}
+ const prev=()=>{if(au.currentTime>3)au.currentTime=0;else play(cur-1)};
+ const toggle=()=>{if(!T.length)return;if(cur<0)return play(first());au.paused?au.play().catch(()=>{}):au.pause()};
+ const ctl=a=>a=='prev'?prev():a=='next'?next():toggle();
+ /* Fundido de volumen */
+ const fade=(to,then)=>{clearInterval(fi);const v0=au.volume,t0=performance.now();
+  fi=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/1500);
+   au.volume=Math.min(1,Math.max(0,v0+(to-v0)*k));if(k>=1){clearInterval(fi);if(then)then()}},60)};
+ /* Integración con Flowtime */
+ const onFocus=()=>{if(!P().auto||!T.length)return;
+  if(au.paused){if(cur<0)play(first());else au.play().catch(()=>{});au.volume=0}
+  fade(P().vol)};
+ const onBreak=()=>{if(au.paused)return;fade(0,()=>{au.pause();au.volume=P().vol})};
+ const stop=()=>{clearInterval(fi);au.pause();au.volume=P().vol};
+ /* Pantalla bloqueada / controles del sistema */
+ function meta(){if(!('mediaSession' in navigator)||cur<0)return;
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:T[cur].name,artist:'Flowtime'})}catch(e){}}
+ if('mediaSession' in navigator){const h=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}};
+  h('play',()=>au.play());h('pause',()=>au.pause());h('previoustrack',prev);h('nexttrack',()=>next());
+  h('seekto',d=>{au.currentTime=d.seekTime})}
+ au.onended=()=>next(true);
+ au.onplay=au.onpause=()=>{mini();paint()};
+ au.onplaying=()=>{errs=0};
+ au.onerror=()=>{if(T.length>1&&errs++<T.length)next(true)};
+ au.ontimeupdate=()=>{
+  const k=$('#msk'),a=$('#mt1'),b=$('#mt2'),d=au.duration;
+  if(k&&document.activeElement!==k&&d)k.value=au.currentTime/d*1000;
+  if(a)a.textContent=fmt(au.currentTime*1000);
+  if(b&&isFinite(d))b.textContent=fmt(d*1000);
+  if(isFinite(d)&&'mediaSession' in navigator){try{navigator.mediaSession.setPositionState({duration:d,position:au.currentTime,playbackRate:1})}catch(e){}}};
+ /* Interfaz */
+ function mini(){
+  const m=$('#mp'),on=T.length&&S.user;document.body.classList.toggle('hasmp',!!on);
+  m.innerHTML=on?`<div class="mp"><span class="mpn">${cur>=0?esc(T[cur].name):'Tu música'}</span><button data-a="prev" aria-label="Anterior">⏮</button><button data-a="pp" aria-label="Reproducir o pausar">${au.paused?'▶':'⏸'}</button><button data-a="next" aria-label="Siguiente">⏭</button></div>`:''}
+ $('#mp').onclick=e=>{const b=e.target.closest('[data-a]');if(b)ctl(b.dataset.a)};
+ function paint(){
+  const l=$('#mlist');if(!l)return;
+  l.innerHTML=T.length?T.map((t,i)=>`<div class="item ih"><button class="trk${i==cur?' on':''}" data-i="${i}"><span aria-hidden="true">${i==cur&&!au.paused?'♪':'▶'}</span> ${esc(t.name)}</button><button class="btn del" data-x="${t.id}" aria-label="Quitar ${esc(t.name)}">Quitar</button></div>`).join(''):empty('🎧','Aún no has añadido música.<br>Elige archivos de tu dispositivo.');
+  const pp=$('#mpp');if(pp)pp.textContent=au.paused?'▶':'⏸';
+  const sh=$('#msh');if(sh){sh.classList.toggle('on',!!P().shuffle);sh.setAttribute('aria-pressed',!!P().shuffle)}
+  const rp=$('#mrp');if(rp)rp.textContent='🔁 Repetir: '+({all:'todas',one:'una',off:'no'})[P().rep]}
+ function view(){
+  const p=P();
+  $('#v').innerHTML=`<div class="card"><h2>🎧 Mi música</h2><p class="mut" style="margin-top:0">Se guarda en este navegador y sigue sonando mientras estudias. Tus archivos no salen de tu dispositivo.</p>
+  <button class="btn lg" id="madd">+ Añadir canciones</button><input type="file" id="mfile" accept="audio/*" multiple class="hide" aria-label="Elegir archivos de audio"></div>
+  <div class="card"><h2>Reproductor</h2>
+  <div class="pr"><span class="mut" id="mt1" style="width:48px">00:00</span><input type="range" id="msk" min="0" max="1000" value="0" aria-label="Posición de la canción"><span class="mut" id="mt2" style="width:48px;text-align:left">00:00</span></div>
+  <div class="acts"><button class="btn sec" data-a="prev" aria-label="Anterior">⏮</button><button class="btn" data-a="pp" id="mpp" aria-label="Reproducir o pausar">▶</button><button class="btn sec" data-a="next" aria-label="Siguiente">⏭</button></div>
+  <div class="acts"><button class="chip" id="msh">🔀 Aleatorio</button><button class="chip" id="mrp"></button></div>
+  <label for="mvo">Volumen</label><input type="range" id="mvo" min="0" max="1" step="0.05" value="${p.vol}">
+  <label style="display:flex;gap:8px;align-items:center;margin:12px 0 0;color:var(--ink)"><input type="checkbox" id="mau" style="width:auto"${p.auto?' checked':''}> Sonar al iniciar sesión y bajar suave al terminar</label></div>
+  <div class="card"><h2>Canciones</h2><div id="mlist"></div></div>`;
+  $('#madd').onclick=()=>$('#mfile').click();
+  $('#mfile').onchange=e=>{add([...e.target.files]);e.target.value=''};
+  document.querySelectorAll('#v [data-a]').forEach(b=>b.onclick=()=>ctl(b.dataset.a));
+  $('#msk').oninput=e=>{if(au.duration)au.currentTime=e.target.value/1000*au.duration};
+  $('#mvo').oninput=e=>{clearInterval(fi);P().vol=+e.target.value;au.volume=P().vol;save()};
+  $('#mau').onchange=e=>{P().auto=e.target.checked;save()};
+  $('#msh').onclick=()=>{P().shuffle=!P().shuffle;save();paint()};
+  $('#mrp').onclick=()=>{const p=P();p.rep={all:'one',one:'off',off:'all'}[p.rep];save();paint()};
+  $('#mlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+   if(b.dataset.i!=null)play(+b.dataset.i);else if(b.dataset.x)del(+b.dataset.x)};
+  paint();au.ontimeupdate()}
+ return{view,mini,load,onFocus,onBreak,stop}
+})();
+function vMusic(){Mus.view()}
+Mus.load();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+render();
+</script>
 </body>
 </html>
